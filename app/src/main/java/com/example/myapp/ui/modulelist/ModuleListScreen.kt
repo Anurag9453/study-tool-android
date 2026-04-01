@@ -12,21 +12,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.myapp.data.model.Module
+import com.example.myapp.ui.common.AppScaffold
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModuleListScreen(
     viewModel: ModuleListViewModel,
+    firstName: String,
+    lastName: String,
+    userRole: String,
+    onLogout: () -> Unit,
     onModuleSelected: (String) -> Unit
 ) {
     val modules by viewModel.modules.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Modules") }
-            )
-        }
+    AppScaffold(
+        title = "Modules",
+        firstName = firstName,
+        lastName = lastName,
+        userRole = userRole,
+        onLogout = onLogout
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier

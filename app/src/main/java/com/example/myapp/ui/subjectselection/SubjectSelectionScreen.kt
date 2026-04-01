@@ -15,22 +15,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.myapp.data.model.Subject
+import com.example.myapp.ui.common.AppScaffold
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubjectSelectionScreen(
     viewModel: SubjectSelectionViewModel,
     classId: Int,
+    firstName: String,
+    lastName: String,
+    userRole: String,
+    onLogout: () -> Unit,
     onSubjectSelected: (String) -> Unit
 ) {
     val subjects by viewModel.subjects.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Class $classId — Select Subject") }
-            )
-        }
+    AppScaffold(
+        title = "Class $classId — Select Subject",
+        firstName = firstName,
+        lastName = lastName,
+        userRole = userRole,
+        onLogout = onLogout
     ) { innerPadding ->
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),

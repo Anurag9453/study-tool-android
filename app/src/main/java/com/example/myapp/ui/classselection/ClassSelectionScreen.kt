@@ -14,21 +14,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.myapp.data.model.SchoolClass
+import com.example.myapp.ui.common.AppScaffold
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClassSelectionScreen(
     viewModel: ClassSelectionViewModel,
+    firstName: String,
+    lastName: String,
+    userRole: String,
+    onLogout: () -> Unit,
     onClassSelected: (Int) -> Unit
 ) {
     val classes by viewModel.classes.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Select Your Class") }
-            )
-        }
+    AppScaffold(
+        title = "Select Your Class",
+        firstName = firstName,
+        lastName = lastName,
+        userRole = userRole,
+        onLogout = onLogout
     ) { innerPadding ->
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),

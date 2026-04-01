@@ -3,7 +3,9 @@ package com.example.myapp.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -39,8 +41,24 @@ fun AppNavGraph(
         .collectAsState(initial = null)
     val userName by userPreferencesRepository.firstName
         .collectAsState(initial = null)
+    val lastName by userPreferencesRepository.lastName
+        .collectAsState(initial = "")
+    val userRoleEnum by userPreferencesRepository.userRole
+        .collectAsState(initial = null)
+
+    val coroutineScope = rememberCoroutineScope()
 
     if (hasCompletedProfile == null || hasCompletedOnboarding == null) return
+
+    val firstName = userName ?: ""
+    val onLogout: () -> Unit = {
+        coroutineScope.launch {
+            userPreferencesRepository.clearAll()
+            navController.navigate(Screen.Splash.route) {
+                popUpTo(0) { inclusive = true }
+            }
+        }
+    }
 
     val nextDestination = when {
         hasCompletedProfile != true -> Screen.UserProfile.route
@@ -94,6 +112,10 @@ fun AppNavGraph(
             }
             ClassSelectionScreen(
                 viewModel = vm,
+                firstName = firstName,
+                lastName = lastName ?: "",
+                userRole = userRoleEnum?.name ?: "",
+                onLogout = onLogout,
                 onClassSelected = { classId ->
                     navController.navigate(Screen.SubjectSelection.createRoute(classId))
                 }
@@ -111,6 +133,10 @@ fun AppNavGraph(
             SubjectSelectionScreen(
                 viewModel = vm,
                 classId = classId,
+                firstName = firstName,
+                lastName = lastName ?: "",
+                userRole = userRoleEnum?.name ?: "",
+                onLogout = onLogout,
                 onSubjectSelected = { subjectId ->
                     navController.navigate(Screen.ChapterList.createRoute(classId, subjectId))
                 }
@@ -131,6 +157,10 @@ fun AppNavGraph(
             }
             ChapterListScreen(
                 viewModel = vm,
+                firstName = firstName,
+                lastName = lastName ?: "",
+                userRole = userRoleEnum?.name ?: "",
+                onLogout = onLogout,
                 onChapterSelected = { chapterId ->
                     navController.navigate(Screen.ModuleList.createRoute(chapterId))
                 }
@@ -147,6 +177,10 @@ fun AppNavGraph(
             }
             ModuleListScreen(
                 viewModel = vm,
+                firstName = firstName,
+                lastName = lastName ?: "",
+                userRole = userRoleEnum?.name ?: "",
+                onLogout = onLogout,
                 onModuleSelected = { moduleId ->
                     navController.navigate(Screen.Content.createRoute(moduleId))
                 }
@@ -161,7 +195,13 @@ fun AppNavGraph(
             val vm = viewModel<ContentViewModel> {
                 ContentViewModel(contentRepository, moduleId)
             }
-            ContentScreen(viewModel = vm)
+            ContentScreen(
+                viewModel = vm,
+                firstName = firstName,
+                lastName = lastName ?: "",
+                userRole = userRoleEnum?.name ?: "",
+                onLogout = onLogout
+            )
         }
     }
 }

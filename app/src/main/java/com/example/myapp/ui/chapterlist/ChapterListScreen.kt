@@ -12,21 +12,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.myapp.data.model.Chapter
+import com.example.myapp.ui.common.AppScaffold
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChapterListScreen(
     viewModel: ChapterListViewModel,
+    firstName: String,
+    lastName: String,
+    userRole: String,
+    onLogout: () -> Unit,
     onChapterSelected: (String) -> Unit
 ) {
     val chapters by viewModel.chapters.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Chapters") }
-            )
-        }
+    AppScaffold(
+        title = "Chapters",
+        firstName = firstName,
+        lastName = lastName,
+        userRole = userRole,
+        onLogout = onLogout
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier

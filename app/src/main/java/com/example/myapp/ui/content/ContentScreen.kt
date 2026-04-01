@@ -16,20 +16,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.myapp.data.model.ContentBlock
 import com.example.myapp.data.model.Question
+import com.example.myapp.ui.common.AppScaffold
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ContentScreen(viewModel: ContentViewModel) {
+fun ContentScreen(
+    viewModel: ContentViewModel,
+    firstName: String,
+    lastName: String,
+    userRole: String,
+    onLogout: () -> Unit
+) {
     val contentBlocks by viewModel.contentBlocks.collectAsState()
     val questions by viewModel.questions.collectAsState()
     val selectedAnswers by viewModel.selectedAnswers.collectAsState()
     val isSubmitted by viewModel.isSubmitted.collectAsState()
     val score by viewModel.score.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Learn") })
-        }
+    AppScaffold(
+        title = "Learn",
+        firstName = firstName,
+        lastName = lastName,
+        userRole = userRole,
+        onLogout = onLogout
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier

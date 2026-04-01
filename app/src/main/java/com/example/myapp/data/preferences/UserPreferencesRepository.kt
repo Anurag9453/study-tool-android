@@ -58,6 +58,10 @@ class UserPreferencesRepository(private val dataStore: DataStore<Preferences>) {
         }
     }
 
+    suspend fun clearAll() {
+        dataStore.edit { it.clear() }
+    }
+
     private companion object {
         val KEY_LANGUAGE = stringPreferencesKey("selected_language")
         val KEY_CLASS_ID = intPreferencesKey("selected_class_id")
