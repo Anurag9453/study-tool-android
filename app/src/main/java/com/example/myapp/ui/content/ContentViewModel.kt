@@ -46,9 +46,6 @@ class ContentViewModel(
     private val _alreadyCompleted = MutableStateFlow(false)
     val alreadyCompleted: StateFlow<Boolean> = _alreadyCompleted
 
-    val totalPoints: StateFlow<Int> = scoringRepository.totalPoints
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
-
     val allAnswered: StateFlow<Boolean> = _selectedAnswers.map { answers ->
         _questions.value.all { it.id in answers }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)

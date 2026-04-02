@@ -24,6 +24,7 @@ fun ClassSelectionScreen(
     userRole: String,
     onLogout: () -> Unit,
     onLeaderboardClick: () -> Unit,
+    totalPoints: Int,
     onClassSelected: (Int) -> Unit
 ) {
     val classes by viewModel.classes.collectAsState()
@@ -34,14 +35,15 @@ fun ClassSelectionScreen(
         lastName = lastName,
         userRole = userRole,
         onLogout = onLogout,
-        onLeaderboardClick = onLeaderboardClick
+        onLeaderboardClick = onLeaderboardClick,
+        totalPoints = totalPoints
     ) { innerPadding ->
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp),
+                .padding(innerPadding),
+            contentPadding = PaddingValues(16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {

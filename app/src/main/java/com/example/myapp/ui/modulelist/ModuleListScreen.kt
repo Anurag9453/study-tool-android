@@ -5,7 +5,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -26,11 +25,12 @@ fun ModuleListScreen(
     userRole: String,
     onLogout: () -> Unit,
     onLeaderboardClick: () -> Unit,
+    onBackClick: () -> Unit,
+    totalPoints: Int,
     onModuleSelected: (String) -> Unit
 ) {
     val modules by viewModel.modules.collectAsState()
     val moduleScores by viewModel.moduleScores.collectAsState()
-    val totalPoints by viewModel.totalPoints.collectAsState()
 
     AppScaffold(
         title = "Modules",
@@ -38,56 +38,17 @@ fun ModuleListScreen(
         lastName = lastName,
         userRole = userRole,
         onLogout = onLogout,
-        onLeaderboardClick = onLeaderboardClick
+        onLeaderboardClick = onLeaderboardClick,
+        onBackClick = onBackClick,
+        totalPoints = totalPoints
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp),
+                .padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(vertical = 8.dp)
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            // Total points banner
-            item {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                Icons.Default.Star,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "Total Score",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                        }
-                        Text(
-                            text = "$totalPoints pts",
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
-            }
-
             items(modules) { module ->
                 ModuleCard(
                     module = module,

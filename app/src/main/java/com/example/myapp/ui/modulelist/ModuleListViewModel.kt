@@ -23,8 +23,4 @@ class ModuleListViewModel(
     val moduleScores: StateFlow<Map<String, ModuleScore>> =
         scoringRepository.getPointsForAllModules()
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
-
-    val totalPoints: StateFlow<Int> =
-        scoringRepository.totalPoints
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 }

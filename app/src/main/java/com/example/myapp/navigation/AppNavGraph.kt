@@ -68,6 +68,12 @@ fun AppNavGraph(
         navController.navigate(Screen.Leaderboard.route)
     }
 
+    val totalPoints by scoringRepository.totalPoints.collectAsState(initial = 0)
+
+    val onBackClick: () -> Unit = {
+        navController.popBackStack()
+    }
+
     val nextDestination = when {
         hasCompletedProfile != true -> Screen.UserProfile.route
         hasCompletedOnboarding != true -> Screen.LanguageSelection.route
@@ -125,6 +131,7 @@ fun AppNavGraph(
                 userRole = userRoleEnum?.name ?: "",
                 onLogout = onLogout,
                 onLeaderboardClick = onLeaderboardClick,
+                totalPoints = totalPoints,
                 onClassSelected = { classId ->
                     navController.navigate(Screen.SubjectSelection.createRoute(classId))
                 }
@@ -147,6 +154,8 @@ fun AppNavGraph(
                 userRole = userRoleEnum?.name ?: "",
                 onLogout = onLogout,
                 onLeaderboardClick = onLeaderboardClick,
+                onBackClick = onBackClick,
+                totalPoints = totalPoints,
                 onSubjectSelected = { subjectId ->
                     navController.navigate(Screen.ChapterList.createRoute(classId, subjectId))
                 }
@@ -172,6 +181,8 @@ fun AppNavGraph(
                 userRole = userRoleEnum?.name ?: "",
                 onLogout = onLogout,
                 onLeaderboardClick = onLeaderboardClick,
+                onBackClick = onBackClick,
+                totalPoints = totalPoints,
                 onChapterSelected = { chapterId ->
                     navController.navigate(Screen.ModuleList.createRoute(chapterId))
                 }
@@ -193,6 +204,8 @@ fun AppNavGraph(
                 userRole = userRoleEnum?.name ?: "",
                 onLogout = onLogout,
                 onLeaderboardClick = onLeaderboardClick,
+                onBackClick = onBackClick,
+                totalPoints = totalPoints,
                 onModuleSelected = { moduleId ->
                     navController.navigate(Screen.Content.createRoute(moduleId))
                 }
@@ -213,7 +226,9 @@ fun AppNavGraph(
                 lastName = lastName ?: "",
                 userRole = userRoleEnum?.name ?: "",
                 onLogout = onLogout,
-                onLeaderboardClick = onLeaderboardClick
+                onLeaderboardClick = onLeaderboardClick,
+                onBackClick = onBackClick,
+                totalPoints = totalPoints
             )
         }
 

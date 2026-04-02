@@ -6,8 +6,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -27,7 +25,9 @@ fun ContentScreen(
     lastName: String,
     userRole: String,
     onLogout: () -> Unit,
-    onLeaderboardClick: () -> Unit
+    onLeaderboardClick: () -> Unit,
+    onBackClick: () -> Unit,
+    totalPoints: Int
 ) {
     val contentBlocks by viewModel.contentBlocks.collectAsState()
     val questions by viewModel.questions.collectAsState()
@@ -38,7 +38,6 @@ fun ContentScreen(
     val attemptNumber by viewModel.attemptNumber.collectAsState()
     val pointsAwarded by viewModel.pointsAwarded.collectAsState()
     val alreadyCompleted by viewModel.alreadyCompleted.collectAsState()
-    val totalPoints by viewModel.totalPoints.collectAsState()
     val allAnswered by viewModel.allAnswered.collectAsState()
 
     AppScaffold(
@@ -47,36 +46,17 @@ fun ContentScreen(
         lastName = lastName,
         userRole = userRole,
         onLogout = onLogout,
-        onLeaderboardClick = onLeaderboardClick
+        onLeaderboardClick = onLeaderboardClick,
+        onBackClick = onBackClick,
+        totalPoints = totalPoints
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp),
+                .padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(vertical = 16.dp)
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp)
         ) {
-            // Total points chip
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    AssistChip(
-                        onClick = {},
-                        label = { Text("$totalPoints pts") },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.Star,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                    )
-                }
-            }
-
             // Content blocks
             items(contentBlocks) { block ->
                 when (block) {
@@ -225,7 +205,6 @@ fun ContentScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     if (!isChecked) {
-                        // Check Answers button
                         Button(
                             onClick = { viewModel.onSubmit() },
                             enabled = allAnswered,
@@ -237,7 +216,6 @@ fun ContentScreen(
                             )
                         }
                     } else {
-                        // Retry button
                         OutlinedButton(
                             onClick = { viewModel.onRetry() },
                             modifier = Modifier.fillMaxWidth()
