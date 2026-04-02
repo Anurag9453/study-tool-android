@@ -6,6 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -24,20 +26,28 @@ fun ContentScreen(
     firstName: String,
     lastName: String,
     userRole: String,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onLeaderboardClick: () -> Unit
 ) {
     val contentBlocks by viewModel.contentBlocks.collectAsState()
     val questions by viewModel.questions.collectAsState()
     val selectedAnswers by viewModel.selectedAnswers.collectAsState()
-    val isSubmitted by viewModel.isSubmitted.collectAsState()
+    val isChecked by viewModel.isChecked.collectAsState()
+    val isCompleted by viewModel.isCompleted.collectAsState()
     val score by viewModel.score.collectAsState()
+    val attemptNumber by viewModel.attemptNumber.collectAsState()
+    val pointsAwarded by viewModel.pointsAwarded.collectAsState()
+    val alreadyCompleted by viewModel.alreadyCompleted.collectAsState()
+    val totalPoints by viewModel.totalPoints.collectAsState()
+    val allAnswered by viewModel.allAnswered.collectAsState()
 
     AppScaffold(
         title = "Learn",
         firstName = firstName,
         lastName = lastName,
         userRole = userRole,
-        onLogout = onLogout
+        onLogout = onLogout,
+        onLeaderboardClick = onLeaderboardClick
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -47,6 +57,26 @@ fun ContentScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(vertical = 16.dp)
         ) {
+            // Total points chip
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    AssistChip(
+                        onClick = {},
+                        label = { Text("$totalPoints pts") },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Default.Star,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    )
+                }
+            }
+
             // Content blocks
             items(contentBlocks) { block ->
                 when (block) {
@@ -69,22 +99,108 @@ fun ContentScreen(
                 }
             }
 
-            // Score card
-            if (score != null) {
+            // Completion banner (already completed from a previous session)
+            if (alreadyCompleted && pointsAwarded != null) {
                 item {
                     Card(
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
                         ),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(
-                            text = "Score: ${score}/${questions.size}",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(16.dp),
-                            color = MaterialTheme.colorScheme.onTertiaryContainer
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column {
+                                Text(
+                                    text = "Quiz Complete!",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                                Text(
+                                    text = "Completed in $attemptNumber attempt${if (attemptNumber > 1) "s" else ""}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            }
+                            Text(
+                                text = "${pointsAwarded} pts",
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Just-completed banner (completed this session, not already)
+            if (isCompleted && !alreadyCompleted && pointsAwarded != null) {
+                item {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column {
+                                Text(
+                                    text = "All Correct!",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                                Text(
+                                    text = "You earned ${pointsAwarded} points",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            }
+                            Text(
+                                text = "${pointsAwarded} pts",
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Retry banner (checked but not all correct)
+            if (isChecked && !isCompleted) {
+                item {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = "Score: ${score}/${questions.size}",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                            Text(
+                                text = "Some answers are wrong. Fix them and try again!",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        }
                     }
                 }
             }
@@ -95,24 +211,41 @@ fun ContentScreen(
                     questionNumber = index + 1,
                     question = question,
                     selectedOptionId = selectedAnswers[question.id],
-                    isSubmitted = isSubmitted,
+                    isChecked = isChecked,
+                    isCompleted = isCompleted,
                     onOptionSelected = { optionId ->
                         viewModel.onOptionSelected(question.id, optionId)
                     }
                 )
             }
 
-            // Submit button
-            if (questions.isNotEmpty() && !isSubmitted) {
+            // Buttons
+            if (questions.isNotEmpty() && !isCompleted) {
                 item {
                     Spacer(modifier = Modifier.height(8.dp))
-                    Button(
-                        onClick = { viewModel.onSubmit() },
-                        enabled = viewModel.allAnswered,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("Check Answers")
+
+                    if (!isChecked) {
+                        // Check Answers button
+                        Button(
+                            onClick = { viewModel.onSubmit() },
+                            enabled = allAnswered,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                if (attemptNumber == 1) "Check Answers"
+                                else "Check Answers (Attempt $attemptNumber)"
+                            )
+                        }
+                    } else {
+                        // Retry button
+                        OutlinedButton(
+                            onClick = { viewModel.onRetry() },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Fix Answers & Retry")
+                        }
                     }
+
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
@@ -158,7 +291,8 @@ private fun QuestionItem(
     questionNumber: Int,
     question: Question,
     selectedOptionId: String?,
-    isSubmitted: Boolean,
+    isChecked: Boolean,
+    isCompleted: Boolean,
     onOptionSelected: (String) -> Unit
 ) {
     Card(
@@ -177,21 +311,23 @@ private fun QuestionItem(
                 val isCorrect = option.id == question.correctOptionId
 
                 val borderColor = when {
-                    !isSubmitted && isSelected -> MaterialTheme.colorScheme.primary
-                    isSubmitted && isCorrect -> MaterialTheme.colorScheme.primary
-                    isSubmitted && isSelected && !isCorrect -> MaterialTheme.colorScheme.error
+                    !isChecked && isSelected -> MaterialTheme.colorScheme.primary
+                    isChecked && isCorrect -> MaterialTheme.colorScheme.primary
+                    isChecked && isSelected && !isCorrect -> MaterialTheme.colorScheme.error
                     else -> MaterialTheme.colorScheme.outlineVariant
                 }
 
                 val containerColor = when {
-                    isSubmitted && isCorrect -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                    isSubmitted && isSelected && !isCorrect -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
+                    isChecked && isCorrect -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                    isChecked && isSelected && !isCorrect -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
                     else -> MaterialTheme.colorScheme.surface
                 }
 
+                val canSelect = !isChecked && !isCompleted
+
                 OutlinedCard(
                     border = BorderStroke(
-                        width = if (isSelected || (isSubmitted && isCorrect)) 2.dp else 1.dp,
+                        width = if (isSelected || (isChecked && isCorrect)) 2.dp else 1.dp,
                         color = borderColor
                     ),
                     colors = CardDefaults.outlinedCardColors(containerColor = containerColor),
@@ -200,7 +336,7 @@ private fun QuestionItem(
                         .padding(vertical = 3.dp)
                         .selectable(
                             selected = isSelected,
-                            onClick = { if (!isSubmitted) onOptionSelected(option.id) }
+                            onClick = { if (canSelect) onOptionSelected(option.id) }
                         )
                 ) {
                     Row(
@@ -211,7 +347,7 @@ private fun QuestionItem(
                     ) {
                         RadioButton(
                             selected = isSelected,
-                            onClick = { if (!isSubmitted) onOptionSelected(option.id) }
+                            onClick = { if (canSelect) onOptionSelected(option.id) }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
@@ -222,8 +358,8 @@ private fun QuestionItem(
                 }
             }
 
-            // Explanation after submit
-            if (isSubmitted) {
+            // Explanation after check
+            if (isChecked) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Card(
                     colors = CardDefaults.cardColors(

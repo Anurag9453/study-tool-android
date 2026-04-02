@@ -9,6 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.navigation.compose.rememberNavController
 import com.example.myapp.data.preferences.UserPreferencesRepository
 import com.example.myapp.data.repository.HardcodedContentRepository
+import com.example.myapp.data.scoring.ScoringRepository
 import com.example.myapp.navigation.AppNavGraph
 import com.example.myapp.ui.theme.MyAppTheme
 
@@ -20,6 +21,7 @@ class MainActivity : ComponentActivity() {
 
         val contentRepository = HardcodedContentRepository()
         val userPreferencesRepository = UserPreferencesRepository(dataStore)
+        val scoringRepository = ScoringRepository(dataStore)
 
         enableEdgeToEdge()
         setContent {
@@ -28,7 +30,8 @@ class MainActivity : ComponentActivity() {
                 AppNavGraph(
                     navController = navController,
                     contentRepository = contentRepository,
-                    userPreferencesRepository = userPreferencesRepository
+                    userPreferencesRepository = userPreferencesRepository,
+                    scoringRepository = scoringRepository
                 )
             }
         }

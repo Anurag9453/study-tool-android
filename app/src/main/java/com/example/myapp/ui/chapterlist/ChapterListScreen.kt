@@ -21,6 +21,7 @@ fun ChapterListScreen(
     lastName: String,
     userRole: String,
     onLogout: () -> Unit,
+    onLeaderboardClick: () -> Unit,
     onChapterSelected: (String) -> Unit
 ) {
     val chapters by viewModel.chapters.collectAsState()
@@ -30,7 +31,8 @@ fun ChapterListScreen(
         firstName = firstName,
         lastName = lastName,
         userRole = userRole,
-        onLogout = onLogout
+        onLogout = onLogout,
+        onLeaderboardClick = onLeaderboardClick
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier

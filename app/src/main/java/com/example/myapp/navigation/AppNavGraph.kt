@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.myapp.data.preferences.UserPreferencesRepository
 import com.example.myapp.data.repository.ContentRepository
+import com.example.myapp.data.scoring.ScoringRepository
 import com.example.myapp.ui.language.LanguageSelectionScreen
 import com.example.myapp.ui.language.LanguageSelectionViewModel
 import com.example.myapp.ui.classselection.ClassSelectionScreen
@@ -25,6 +26,8 @@ import com.example.myapp.ui.modulelist.ModuleListScreen
 import com.example.myapp.ui.modulelist.ModuleListViewModel
 import com.example.myapp.ui.content.ContentScreen
 import com.example.myapp.ui.content.ContentViewModel
+import com.example.myapp.ui.leaderboard.LeaderboardScreen
+import com.example.myapp.ui.leaderboard.LeaderboardViewModel
 import com.example.myapp.ui.splash.SplashScreen
 import com.example.myapp.ui.userprofile.UserProfileScreen
 import com.example.myapp.ui.userprofile.UserProfileViewModel
@@ -33,7 +36,8 @@ import com.example.myapp.ui.userprofile.UserProfileViewModel
 fun AppNavGraph(
     navController: NavHostController,
     contentRepository: ContentRepository,
-    userPreferencesRepository: UserPreferencesRepository
+    userPreferencesRepository: UserPreferencesRepository,
+    scoringRepository: ScoringRepository
 ) {
     val hasCompletedProfile by userPreferencesRepository.hasCompletedProfile
         .collectAsState(initial = null)
@@ -58,6 +62,10 @@ fun AppNavGraph(
                 popUpTo(0) { inclusive = true }
             }
         }
+    }
+
+    val onLeaderboardClick: () -> Unit = {
+        navController.navigate(Screen.Leaderboard.route)
     }
 
     val nextDestination = when {
@@ -116,6 +124,7 @@ fun AppNavGraph(
                 lastName = lastName ?: "",
                 userRole = userRoleEnum?.name ?: "",
                 onLogout = onLogout,
+                onLeaderboardClick = onLeaderboardClick,
                 onClassSelected = { classId ->
                     navController.navigate(Screen.SubjectSelection.createRoute(classId))
                 }
@@ -137,6 +146,7 @@ fun AppNavGraph(
                 lastName = lastName ?: "",
                 userRole = userRoleEnum?.name ?: "",
                 onLogout = onLogout,
+                onLeaderboardClick = onLeaderboardClick,
                 onSubjectSelected = { subjectId ->
                     navController.navigate(Screen.ChapterList.createRoute(classId, subjectId))
                 }
@@ -161,6 +171,7 @@ fun AppNavGraph(
                 lastName = lastName ?: "",
                 userRole = userRoleEnum?.name ?: "",
                 onLogout = onLogout,
+                onLeaderboardClick = onLeaderboardClick,
                 onChapterSelected = { chapterId ->
                     navController.navigate(Screen.ModuleList.createRoute(chapterId))
                 }
@@ -173,7 +184,7 @@ fun AppNavGraph(
         ) { backStackEntry ->
             val chapterId = backStackEntry.arguments?.getString("chapterId") ?: ""
             val vm = viewModel<ModuleListViewModel> {
-                ModuleListViewModel(contentRepository, chapterId)
+                ModuleListViewModel(contentRepository, chapterId, scoringRepository)
             }
             ModuleListScreen(
                 viewModel = vm,
@@ -181,6 +192,7 @@ fun AppNavGraph(
                 lastName = lastName ?: "",
                 userRole = userRoleEnum?.name ?: "",
                 onLogout = onLogout,
+                onLeaderboardClick = onLeaderboardClick,
                 onModuleSelected = { moduleId ->
                     navController.navigate(Screen.Content.createRoute(moduleId))
                 }
@@ -193,14 +205,28 @@ fun AppNavGraph(
         ) { backStackEntry ->
             val moduleId = backStackEntry.arguments?.getString("moduleId") ?: ""
             val vm = viewModel<ContentViewModel> {
-                ContentViewModel(contentRepository, moduleId)
+                ContentViewModel(contentRepository, moduleId, scoringRepository)
             }
             ContentScreen(
                 viewModel = vm,
                 firstName = firstName,
                 lastName = lastName ?: "",
                 userRole = userRoleEnum?.name ?: "",
-                onLogout = onLogout
+                onLogout = onLogout,
+                onLeaderboardClick = onLeaderboardClick
+            )
+        }
+
+        composable(Screen.Leaderboard.route) {
+            val vm = viewModel<LeaderboardViewModel> {
+                LeaderboardViewModel(
+                    scoringRepository = scoringRepository,
+                    currentUserName = "$firstName ${lastName ?: ""}".trim()
+                )
+            }
+            LeaderboardScreen(
+                viewModel = vm,
+                onBackClick = { navController.popBackStack() }
             )
         }
     }

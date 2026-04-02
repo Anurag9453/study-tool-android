@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -19,6 +20,7 @@ fun DrawerContent(
     firstName: String,
     lastName: String,
     userRole: String,
+    onLeaderboardClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onLogoutClick: () -> Unit
 ) {
@@ -72,6 +74,15 @@ fun DrawerContent(
         }
 
         Spacer(modifier = Modifier.height(8.dp))
+
+        // Leaderboard
+        NavigationDrawerItem(
+            icon = { Icon(Icons.Default.Leaderboard, contentDescription = "Leaderboard") },
+            label = { Text("Leaderboard") },
+            selected = false,
+            onClick = onLeaderboardClick,
+            modifier = Modifier.padding(horizontal = 12.dp)
+        )
 
         // Settings
         NavigationDrawerItem(

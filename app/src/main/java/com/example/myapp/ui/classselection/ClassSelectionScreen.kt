@@ -23,6 +23,7 @@ fun ClassSelectionScreen(
     lastName: String,
     userRole: String,
     onLogout: () -> Unit,
+    onLeaderboardClick: () -> Unit,
     onClassSelected: (Int) -> Unit
 ) {
     val classes by viewModel.classes.collectAsState()
@@ -32,7 +33,8 @@ fun ClassSelectionScreen(
         firstName = firstName,
         lastName = lastName,
         userRole = userRole,
-        onLogout = onLogout
+        onLogout = onLogout,
+        onLeaderboardClick = onLeaderboardClick
     ) { innerPadding ->
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),

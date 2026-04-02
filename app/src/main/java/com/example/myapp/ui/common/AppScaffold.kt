@@ -22,6 +22,7 @@ fun AppScaffold(
     lastName: String,
     userRole: String,
     onLogout: () -> Unit,
+    onLeaderboardClick: () -> Unit = {},
     content: @Composable (innerPadding: androidx.compose.foundation.layout.PaddingValues) -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -34,6 +35,10 @@ fun AppScaffold(
                 firstName = firstName,
                 lastName = lastName,
                 userRole = userRole,
+                onLeaderboardClick = {
+                    scope.launch { drawerState.close() }
+                    onLeaderboardClick()
+                },
                 onSettingsClick = {
                     scope.launch { drawerState.close() }
                 },

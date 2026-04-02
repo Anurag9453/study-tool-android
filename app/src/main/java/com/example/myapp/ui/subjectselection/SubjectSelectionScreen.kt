@@ -25,6 +25,7 @@ fun SubjectSelectionScreen(
     lastName: String,
     userRole: String,
     onLogout: () -> Unit,
+    onLeaderboardClick: () -> Unit,
     onSubjectSelected: (String) -> Unit
 ) {
     val subjects by viewModel.subjects.collectAsState()
@@ -34,7 +35,8 @@ fun SubjectSelectionScreen(
         firstName = firstName,
         lastName = lastName,
         userRole = userRole,
-        onLogout = onLogout
+        onLogout = onLogout,
+        onLeaderboardClick = onLeaderboardClick
     ) { innerPadding ->
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
