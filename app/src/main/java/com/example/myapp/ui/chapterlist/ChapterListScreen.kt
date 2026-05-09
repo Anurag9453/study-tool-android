@@ -3,6 +3,8 @@ package com.example.myapp.ui.chapterlist
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.QuestionAnswer
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -13,18 +15,44 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.myapp.data.model.Chapter
 
+private fun subjectDisplayName(subjectId: String) = when (subjectId) {
+    "maths"      -> "Mathematics"
+    "physics"    -> "Physics"
+    "chemistry"  -> "Chemistry"
+    "geography"  -> "Geography"
+    "history"    -> "History"
+    "react"      -> "React"
+    "python"     -> "Python"
+    "java"       -> "Java"
+    "mongodb"    -> "MongoDB"
+    "docker"     -> "Docker"
+    "kubernetes" -> "Kubernetes"
+    else         -> subjectId
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChapterListScreen(
     viewModel: ChapterListViewModel,
-    onChapterSelected: (String) -> Unit
+    subjectId: String,
+    onChapterSelected: (String) -> Unit,
+    onQAClicked: (String) -> Unit
 ) {
     val chapters by viewModel.chapters.collectAsState()
+    val subjectName = subjectDisplayName(subjectId)
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Chapters") }
+                title = { Text("Chapters") },
+                actions = {
+                    IconButton(onClick = { onQAClicked(subjectName) }) {
+                        Icon(
+                            imageVector = Icons.Default.QuestionAnswer,
+                            contentDescription = "Q&A"
+                        )
+                    }
+                }
             )
         }
     ) { innerPadding ->

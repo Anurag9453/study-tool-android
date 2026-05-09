@@ -21,14 +21,16 @@ import com.example.myapp.data.model.Subject
 fun SubjectSelectionScreen(
     viewModel: SubjectSelectionViewModel,
     classId: Int,
+    section: String,
     onSubjectSelected: (String) -> Unit
 ) {
     val subjects by viewModel.subjects.collectAsState()
+    val title = if (section == "it") "IT & Technology" else "Class $classId — Select Subject"
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Class $classId — Select Subject") }
+                title = { Text(title) }
             )
         }
     ) { innerPadding ->

@@ -7,9 +7,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class SubjectSelectionViewModel(
-    contentRepository: ContentRepository
+    contentRepository: ContentRepository,
+    section: String
 ) : ViewModel() {
 
-    private val _subjects = MutableStateFlow(contentRepository.getSubjects())
+    private val _subjects = MutableStateFlow(contentRepository.getSubjects(section))
     val subjects: StateFlow<List<Subject>> = _subjects
 }
