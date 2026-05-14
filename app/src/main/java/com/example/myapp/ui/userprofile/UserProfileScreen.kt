@@ -2,6 +2,7 @@ package com.example.myapp.ui.userprofile
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -10,9 +11,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.myapp.data.model.UserRole
+import com.example.myapp.ui.theme.NavBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,8 +34,18 @@ fun UserProfileScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Your Profile") })
-        }
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Your Profile",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = NavBar)
+            )
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -41,16 +54,20 @@ fun UserProfileScreen(
                 .padding(horizontal = 24.dp)
                 .verticalScroll(rememberScrollState()),
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Text(
                 text = "Tell us about yourself",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = "This helps personalise your learning experience",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(28.dp))
 
-            // First Name
             OutlinedTextField(
                 value = firstName,
                 onValueChange = viewModel::onFirstNameChanged,
@@ -60,11 +77,11 @@ fun UserProfileScreen(
                 supportingText = if (hasAttemptedSubmit && firstName.isBlank()) {
                     { Text("First name is required") }
                 } else null,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Last Name
             OutlinedTextField(
                 value = lastName,
                 onValueChange = viewModel::onLastNameChanged,
@@ -74,15 +91,15 @@ fun UserProfileScreen(
                 supportingText = if (hasAttemptedSubmit && lastName.isBlank()) {
                     { Text("Last name is required") }
                 } else null,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
             )
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
-            // Role selection
             Text(
-                text = "Are you a? *",
+                text = "I am a...",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.SemiBold
             )
             if (hasAttemptedSubmit && selectedRole == null) {
                 Text(
@@ -109,16 +126,20 @@ fun UserProfileScreen(
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            // Save button
             Button(
                 onClick = viewModel::onSave,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(52.dp)
+                    .height(52.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary
+                )
             ) {
                 Text(
                     text = "Save & Continue",
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
                 )
             }
 
@@ -135,16 +156,21 @@ private fun RoleChip(
     modifier: Modifier = Modifier
 ) {
     if (isSelected) {
-        FilledTonalButton(
+        Button(
             onClick = onClick,
-            modifier = modifier.height(48.dp)
+            modifier = modifier.height(48.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary
+            )
         ) {
-            Text(role.displayName)
+            Text(role.displayName, fontWeight = FontWeight.Bold)
         }
     } else {
         OutlinedButton(
             onClick = onClick,
-            modifier = modifier.height(48.dp)
+            modifier = modifier.height(48.dp),
+            shape = RoundedCornerShape(12.dp)
         ) {
             Text(role.displayName)
         }

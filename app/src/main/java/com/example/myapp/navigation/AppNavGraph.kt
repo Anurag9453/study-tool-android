@@ -111,6 +111,7 @@ fun AppNavGraph(
             }
             ClassSelectionScreen(
                 viewModel = vm,
+                onBack = { navController.navigateUp() },
                 onClassSelected = { classId ->
                     navController.navigate(
                         Screen.SubjectSelection.createRoute(classId, Section.SCHOOL.id)
@@ -135,6 +136,7 @@ fun AppNavGraph(
                 viewModel = vm,
                 classId = classId,
                 section = section,
+                onBack = { navController.navigateUp() },
                 onSubjectSelected = { subjectId ->
                     navController.navigate(Screen.ChapterList.createRoute(classId, subjectId))
                 }
@@ -156,6 +158,7 @@ fun AppNavGraph(
             ChapterListScreen(
                 viewModel = vm,
                 subjectId = subjectId,
+                onBack = { navController.navigateUp() },
                 onChapterSelected = { chapterId ->
                     navController.navigate(Screen.ModuleList.createRoute(chapterId))
                 },
@@ -174,7 +177,11 @@ fun AppNavGraph(
         ) { backStackEntry ->
             val subjectName = backStackEntry.arguments?.getString("subjectName") ?: "Subject"
             val vm = viewModel<QAViewModel>()
-            QAScreen(viewModel = vm, subjectName = subjectName)
+            QAScreen(
+                viewModel = vm,
+                subjectName = subjectName,
+                onBack = { navController.navigateUp() }
+            )
         }
 
         composable(
@@ -187,6 +194,7 @@ fun AppNavGraph(
             }
             ModuleListScreen(
                 viewModel = vm,
+                onBack = { navController.navigateUp() },
                 onModuleSelected = { moduleId ->
                     navController.navigate(Screen.Content.createRoute(moduleId))
                 }
@@ -201,7 +209,10 @@ fun AppNavGraph(
             val vm = viewModel<ContentViewModel> {
                 ContentViewModel(contentRepository, moduleId)
             }
-            ContentScreen(viewModel = vm)
+            ContentScreen(
+                viewModel = vm,
+                onBack = { navController.navigateUp() }
+            )
         }
     }
 }

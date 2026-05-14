@@ -1,22 +1,31 @@
 package com.example.myapp.ui.content
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.myapp.data.model.ContentBlock
 import com.example.myapp.data.model.Question
 import com.example.myapp.data.repository.ContentRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ContentViewModel(
-    contentRepository: ContentRepository,
-    moduleId: String
+    private val contentRepository: ContentRepository,
+    private val moduleId: String
 ) : ViewModel() {
 
-    private val _contentBlocks = MutableStateFlow(contentRepository.getContentBlocks(moduleId))
+    val moduleTitle: String = contentRepository.getModuleTitle(moduleId)
+
+    private val _contentBlocks = MutableStateFlow<List<ContentBlock>>(emptyList())
     val contentBlocks: StateFlow<List<ContentBlock>> = _contentBlocks
 
-    private val _questions = MutableStateFlow(contentRepository.getQuestions(moduleId))
+    private val _questions = MutableStateFlow<List<Question>>(emptyList())
     val questions: StateFlow<List<Question>> = _questions
+
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
     private val _selectedAnswers = MutableStateFlow<Map<String, String>>(emptyMap())
     val selectedAnswers: StateFlow<Map<String, String>> = _selectedAnswers
@@ -26,6 +35,20 @@ class ContentViewModel(
 
     private val _score = MutableStateFlow<Int?>(null)
     val score: StateFlow<Int?> = _score
+
+    init {
+        viewModelScope.launch {
+            val blocks = withContext(Dispatchers.Default) {
+                contentRepository.getContentBlocks(moduleId)
+            }
+            val qs = withContext(Dispatchers.Default) {
+                contentRepository.getQuestions(moduleId)
+            }
+            _contentBlocks.value = blocks
+            _questions.value = qs
+            _isLoading.value = false
+        }
+    }
 
     fun onOptionSelected(questionId: String, optionId: String) {
         if (_isSubmitted.value) return

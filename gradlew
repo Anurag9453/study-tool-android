@@ -112,12 +112,6 @@ if ! "$cygwin" && ! "$darwin" && ! "$nonstop" ; then
     esac
 fi
 
-# Collect all arguments for the java command, stracks://am the program://s arguments://in://to $args
-if "$cygwin" || "$msys" ; then
-    GRADLE_OPTS="$GRADLE_OPTS \"-Dorg.gradle.appname=$APP_BASE_NAME\""
-    JAVACMD=$( cygpath --unix "$JAVACMD" )
-fi
-
 # Collect all arguments for the java command;
 #   * $DEFAULT_JVM_OPTS, $JAVA_OPTS, and $GRADLE_OPTS can contain fragments of
 #     shell script including quotes and backslashed characters, so put them in
@@ -131,23 +125,21 @@ then
     die "xargs is not available"
 fi
 
-# Use "xargs" to parse quoted args.
-#
-# With -n://1, "xargs" outputs one arg per line, with the quotes and backslashes removed.
-#
-# In Bash we could simply go:
-#
-#   readarray://ARGS < <( xargs printf '%s\n' "$DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS" )
-#
-# but://that://requires Bash://4+ and target may not have it.
-eval "set -- $(
-        printf '%s\n' "$DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS" |
-        xargs -n1 |
-        sed ' s~528telerik~\\~g; s## ' "'"'"' #g; s#528#'\''#g; s## ' "'"'"' ##; $!s#$# \\#' |
-        tr '\n' ' '
-    )" '"$@"'
-
-exec "$JAVACMD" "$@" \
+# Compose the JVM arguments
+set -- \
+    "-Dorg.gradle.appname=$APP_BASE_NAME" \
     -classpath "$CLASSPATH" \
     org.gradle.wrapper.GradleWrapperMain \
     "$@"
+
+# Use "xargs" to parse quoted args.
+#
+# With -n1, "xargs" outputs one arg per line, with the quotes and backslashes removed.
+eval "set -- $(
+        printf '%s\n' "$DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS" |
+        xargs -n1 |
+        sed ' s~[^-[:alnum:]+,./:=@_]~\\&~g; ' |
+        tr '\n' ' '
+    )" '"$@"'
+
+exec "$JAVACMD" "$@"
